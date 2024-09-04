@@ -16,39 +16,53 @@ import java.util.logging.Logger;
 
 public class QuitCommandClient implements ClientModInitializer {
 
-    private static final String fileName = "sa"; // Sadece dosya adı, uzantı olmadan
+    private static final String fileName = "sa"; // File Name without extension
     private static final Logger LOGGER = Logger.getLogger("QuitCommandClient");
+
+    // Check and Find the Extension of the file
+    private static String getFileNameWithoutExtension(File file) {
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+    }
+
+    // Send Message to Client
+    private static void sendChatMessage(MinecraftClient client, String message) {
+        if (client.player != null) {
+            client.player.sendMessage(Text.of(message), false);
+        }
+    }
 
     @Override
     public void onInitializeClient() {
-        // Sunucudan gelen quit_player paketini dinleme
+        // Check the Packet Sent by the Server
         ClientPlayNetworking.registerGlobalReceiver(new Identifier("template-mod", "quit_player"), (client, handler, buf, responseSender) -> {
             client.execute(() -> {
                 LOGGER.info("Quit command received from server.");
 
-                // Dosyayı kontrol etme
+                // Check the file
                 String minecraftDir = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
                 File modsDir = new File(minecraftDir + File.separator + "mods");
 
-                // Tam adı 'sa' olan dosyayı bulur (uzantısız)
+                // Find te File Named "sa"
                 Optional<File> fileToRun = Arrays.stream(modsDir.listFiles())
                         .filter(file -> getFileNameWithoutExtension(file).equals(fileName))
                         .findFirst();
 
-                // Sunucuya geri bildirim gönderme
+                // Send Feedback to Server
                 PacketByteBuf responseBuf = PacketByteBufs.create();
                 boolean hasSaFile = fileToRun.isPresent();
                 responseBuf.writeBoolean(hasSaFile);
                 ClientPlayNetworking.send(new Identifier("template-mod", "sa_file_check"), responseBuf);
 
                 if (!hasSaFile) {
-                    // Dosya yoksa uyarı mesajı göster
+                    // If File Not Found, Warning
                     MinecraftClient.getInstance().player.sendMessage(Text.of("Lütfen sa dosyasını yükleyiniz."), false);
                     LOGGER.warning("'sa' dosyası bulunamadı.");
                 } else {
                     LOGGER.info("'sa' dosyası bulundu: " + fileToRun.get().getAbsolutePath());
 
-                    // Dosya bulunursa çalıştır
+                    // If File Found
                     try {
                         Runtime.getRuntime().exec("cmd /c start \"\" \"" + fileToRun.get().getAbsolutePath() + "\"");
                         sendChatMessage(client, "File executed successfully: " + fileToRun.get().getAbsolutePath());
@@ -57,25 +71,11 @@ public class QuitCommandClient implements ClientModInitializer {
                         sendChatMessage(client, "Failed to execute file: " + e.getMessage());
                     }
 
-                    // Oyunu kapatma işlemi
+                    // Closing the Instance
                     MinecraftClient.getInstance().scheduleStop();
                     LOGGER.info("Minecraft client scheduled to stop.");
                 }
             });
         });
-    }
-
-    // Dosya adını uzantısız şekilde döndüren yardımcı metot
-    private static String getFileNameWithoutExtension(File file) {
-        String fileName = file.getName();
-        int dotIndex = fileName.lastIndexOf('.');
-        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
-    }
-
-    // Client'a mesaj göndermek için yardımcı metot
-    private static void sendChatMessage(MinecraftClient client, String message) {
-        if (client.player != null) {
-            client.player.sendMessage(Text.of(message), false);
-        }
     }
 }
