@@ -3,7 +3,7 @@
 	"id": "bridgeyourlaunchers",
 	"version": "${version}",
 	"name": "Bridge Your Launchers",
-	"description": "Bridge your Fabric and Forge Launcher with simple command! Req. CurseForge",
+	"description": "Bridge your Fabric and Forge Launcher with simple command!",
 	"authors": [
 		"Vanilla Crafters"
 	],
