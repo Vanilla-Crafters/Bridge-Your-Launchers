@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -18,6 +19,9 @@ public class QuitCommandClient implements ClientModInitializer {
 
     private static final String fileName = "sa"; // File Name without extension
     private static final Logger LOGGER = Logger.getLogger("QuitCommandClient");
+    private static final String configFolderName = "bridgeyourlaunchers";
+    private static final String profilesFolderName = "profiles";
+    private static final String readmeFileName = "readme.txt";
 
     // Check and Find the Extension of the file
     private static String getFileNameWithoutExtension(File file) {
@@ -35,6 +39,9 @@ public class QuitCommandClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // Create config folder and files
+        createConfigFolderAndFiles();
+
         // Check the Packet Sent by the Server
         ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "quit_player"), (client, handler, buf, responseSender) -> {
             client.execute(() -> {
@@ -42,10 +49,10 @@ public class QuitCommandClient implements ClientModInitializer {
 
                 // Check the file
                 String minecraftDir = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
-                File modsDir = new File(minecraftDir + File.separator + "mods");
+                File profilesDir = new File(minecraftDir + File.separator + "config" + File.separator + configFolderName + File.separator + profilesFolderName);
 
-                // Find te File Named "sa"
-                Optional<File> fileToRun = Arrays.stream(modsDir.listFiles())
+                // Find the File Named "sa"
+                Optional<File> fileToRun = Arrays.stream(profilesDir.listFiles())
                         .filter(file -> getFileNameWithoutExtension(file).equals(fileName))
                         .findFirst();
 
@@ -77,5 +84,33 @@ public class QuitCommandClient implements ClientModInitializer {
                 }
             });
         });
+    }
+
+    private void createConfigFolderAndFiles() {
+        String minecraftDir = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
+        File configDir = new File(minecraftDir + File.separator + "config" + File.separator + configFolderName);
+        File profilesDir = new File(configDir + File.separator + profilesFolderName);
+        File readmeFile = new File(configDir, readmeFileName);
+
+        // Create the folders if they don't exist
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+            LOGGER.info("Created config folder: " + configDir.getAbsolutePath());
+        }
+
+        if (!profilesDir.exists()) {
+            profilesDir.mkdirs();
+            LOGGER.info("Created profiles folder: " + profilesDir.getAbsolutePath());
+        }
+
+        // Create the readme.txt file
+        if (!readmeFile.exists()) {
+            try (FileWriter writer = new FileWriter(readmeFile)) {
+                writer.write("This is the readme file for Bridge Your Launchers mod.");
+                LOGGER.info("Created readme file: " + readmeFile.getAbsolutePath());
+            } catch (IOException e) {
+                LOGGER.severe("Failed to create readme file: " + e.getMessage());
+            }
+        }
     }
 }
