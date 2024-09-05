@@ -2,7 +2,6 @@ package net.vanillacrafters.bridgeyourlaunchers;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -11,24 +10,15 @@ import net.minecraft.util.Identifier;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 public class BridgeCommandClient implements ClientModInitializer {
 
-    private static final String fileName = "sa"; // File Name without extension
     private static final Logger LOGGER = Logger.getLogger("BridgeCommandClient");
     private static final String configFolderName = "bridgeyourlaunchers";
     private static final String profilesFolderName = "profiles";
     private static final String readmeFileName = "readme.txt";
-
-    // Check and Find the Extension of the file
-    private static String getFileNameWithoutExtension(File file) {
-        String fileName = file.getName();
-        int dotIndex = fileName.lastIndexOf('.');
-        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
-    }
 
     // Send Message to Client
     private static void sendChatMessage(MinecraftClient client, String message) {
@@ -42,48 +32,47 @@ public class BridgeCommandClient implements ClientModInitializer {
         // Create config folder and files
         createConfigFolderAndFiles();
 
-        // Check the Packet Sent by the Server
+        // Register packet to handle server's request
         ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "bridge_player"), (client, handler, buf, responseSender) -> {
+            // Netty Buffer'dan veriyi hemen alıp işlem yapacağız.
+            String profile = buf.readString();  // Profil adını burada hemen okuyoruz.
+
             client.execute(() -> {
-                LOGGER.info("Quit command received from server.");
+                try {
+                    LOGGER.info("Bridge command received for profile: " + profile);
 
-                // Check the file
-                String minecraftDir = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
-                File profilesDir = new File(minecraftDir + File.separator + "config" + File.separator + configFolderName + File.separator + profilesFolderName);
+                    // Check for .url files in the specified profile folder
+                    String minecraftDir = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
+                    File profileDir = new File(minecraftDir + File.separator + "config" + File.separator + configFolderName + File.separator + profilesFolderName + File.separator + profile);
 
-                // Find the File Named "sa"
-                Optional<File> fileToRun = Arrays.stream(profilesDir.listFiles())
-                        .filter(file -> getFileNameWithoutExtension(file).equals(fileName))
-                        .findFirst();
-
-                // Send Feedback to Server
-                PacketByteBuf responseBuf = PacketByteBufs.create();
-                boolean hasSaFile = fileToRun.isPresent();
-                responseBuf.writeBoolean(hasSaFile);
-                ClientPlayNetworking.send(new Identifier("bridgeyourlaunchers", "sa_file_check"), responseBuf);
-
-                if (!hasSaFile) {
-                    // If File Not Found, Warning
-                    MinecraftClient.getInstance().player.sendMessage(Text.of("Lütfen sa dosyasını yükleyiniz."), false);
-                    LOGGER.warning("'sa' dosyası bulunamadı.");
-                } else {
-                    LOGGER.info("'sa' dosyası bulundu: " + fileToRun.get().getAbsolutePath());
-
-                    // If File Found
-                    try {
-                        Runtime.getRuntime().exec("cmd /c start \"\" \"" + fileToRun.get().getAbsolutePath() + "\"");
-                        sendChatMessage(client, "File executed successfully: " + fileToRun.get().getAbsolutePath());
-                    } catch (IOException e) {
-                        LOGGER.severe("Failed to execute file: " + e.getMessage());
-                        sendChatMessage(client, "Failed to execute file: " + e.getMessage());
+                    Optional<File> urlFile = findUrlFile(profileDir);
+                    if (urlFile.isPresent()) {
+                        try {
+                            Runtime.getRuntime().exec("cmd /c start \"\" \"" + urlFile.get().getAbsolutePath() + "\"");
+                            sendChatMessage(client, "URL file opened successfully: " + urlFile.get().getAbsolutePath());
+                        } catch (IOException e) {
+                            LOGGER.severe("Failed to open URL file: " + e.getMessage());
+                            sendChatMessage(client, "Failed to open URL file: " + e.getMessage());
+                        }
+                        MinecraftClient.getInstance().scheduleStop();
+                        LOGGER.info("Minecraft client scheduled to stop.");
+                    } else {
+                        sendChatMessage(client, "No URL file found in profile: " + profile);
                     }
-
-                    // Closing the Instance
-                    MinecraftClient.getInstance().scheduleStop();
-                    LOGGER.info("Minecraft client scheduled to stop.");
+                } catch (Exception e) {
+                    LOGGER.severe("Error handling packet: " + e.getMessage());
+                    sendChatMessage(client, "Error handling packet: " + e.getMessage());
                 }
             });
         });
+    }
+
+    private Optional<File> findUrlFile(File profileFolder) {
+        File[] files = profileFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".url"));
+        if (files != null && files.length > 0) {
+            return Optional.of(files[0]);
+        }
+        return Optional.empty();
     }
 
     private void createConfigFolderAndFiles() {
