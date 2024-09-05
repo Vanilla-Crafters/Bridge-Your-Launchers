@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class QuitCommandClient implements ClientModInitializer {
+public class BridgeCommandClient implements ClientModInitializer {
 
     private static final String fileName = "sa"; // File Name without extension
-    private static final Logger LOGGER = Logger.getLogger("QuitCommandClient");
+    private static final Logger LOGGER = Logger.getLogger("BridgeCommandClient");
     private static final String configFolderName = "bridgeyourlaunchers";
     private static final String profilesFolderName = "profiles";
     private static final String readmeFileName = "readme.txt";
@@ -43,7 +43,7 @@ public class QuitCommandClient implements ClientModInitializer {
         createConfigFolderAndFiles();
 
         // Check the Packet Sent by the Server
-        ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "quit_player"), (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "bridge_player"), (client, handler, buf, responseSender) -> {
             client.execute(() -> {
                 LOGGER.info("Quit command received from server.");
 

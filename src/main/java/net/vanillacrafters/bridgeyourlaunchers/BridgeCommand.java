@@ -16,17 +16,17 @@ import net.minecraft.util.Identifier;
 
 import static net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchers.LOGGER;
 
-public class QuitCommand implements ModInitializer {
+public class BridgeCommand implements ModInitializer {
 
     @Override
     public void onInitialize() {
         // Register server command
-        CommandRegistrationCallback.EVENT.register(QuitCommand::register);
+        CommandRegistrationCallback.EVENT.register(BridgeCommand::register);
     }
 
     // Define the server command
     private static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(CommandManager.literal("quit")
+        dispatcher.register(CommandManager.literal("bridge")
             .requires(source -> source.hasPermissionLevel(2))
             .then(CommandManager.argument("player", EntityArgumentType.player())
             .executes(context -> {
@@ -35,7 +35,7 @@ public class QuitCommand implements ModInitializer {
 
                 // Send packet to the client
                 PacketByteBuf buf = PacketByteBufs.create();
-                ServerPlayNetworking.send(targetPlayer, new Identifier("bridgeyourlaunchers", "quit_player"), buf);
+                ServerPlayNetworking.send(targetPlayer, new Identifier("bridgeyourlaunchers", "bridge_player"), buf);
 
                 // Register packet receiver and handle the response
                 ServerPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "sa_file_check"), (server, player, handler, receivedBuf, responseSender) -> {

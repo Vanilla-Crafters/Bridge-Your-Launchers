@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.vanillacrafters.bridgeyourlaunchers.QuitCommand"
+			"net.vanillacrafters.bridgeyourlaunchers.BridgeCommand"
 		],
 		"client": [
-			"net.vanillacrafters.bridgeyourlaunchers.QuitCommandClient"
+			"net.vanillacrafters.bridgeyourlaunchers.BridgeCommandClient"
 		],
 		"fabric-datagen": [
 			"net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchersDataGenerator"
