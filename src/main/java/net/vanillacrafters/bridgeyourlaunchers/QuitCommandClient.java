@@ -36,7 +36,7 @@ public class QuitCommandClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Check the Packet Sent by the Server
-        ClientPlayNetworking.registerGlobalReceiver(new Identifier("template-mod", "quit_player"), (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "quit_player"), (client, handler, buf, responseSender) -> {
             client.execute(() -> {
                 LOGGER.info("Quit command received from server.");
 
@@ -53,7 +53,7 @@ public class QuitCommandClient implements ClientModInitializer {
                 PacketByteBuf responseBuf = PacketByteBufs.create();
                 boolean hasSaFile = fileToRun.isPresent();
                 responseBuf.writeBoolean(hasSaFile);
-                ClientPlayNetworking.send(new Identifier("template-mod", "sa_file_check"), responseBuf);
+                ClientPlayNetworking.send(new Identifier("bridgeyourlaunchers", "sa_file_check"), responseBuf);
 
                 if (!hasSaFile) {
                     // If File Not Found, Warning

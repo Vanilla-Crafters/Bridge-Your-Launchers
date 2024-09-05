@@ -35,10 +35,10 @@ public class QuitCommand implements ModInitializer {
 
                 // Send packet to the client
                 PacketByteBuf buf = PacketByteBufs.create();
-                ServerPlayNetworking.send(targetPlayer, new Identifier("template-mod", "quit_player"), buf);
+                ServerPlayNetworking.send(targetPlayer, new Identifier("bridgeyourlaunchers", "quit_player"), buf);
 
                 // Register packet receiver and handle the response
-                ServerPlayNetworking.registerGlobalReceiver(new Identifier("template-mod", "sa_file_check"), (server, player, handler, receivedBuf, responseSender) -> {
+                ServerPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "sa_file_check"), (server, player, handler, receivedBuf, responseSender) -> {
                     boolean hasSaFile = receivedBuf.readBoolean();
                     if (!hasSaFile) {
                         // Inform server console about the missing file
