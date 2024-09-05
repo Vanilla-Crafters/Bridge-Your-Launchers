@@ -2,6 +2,7 @@ package net.vanillacrafters.bridgeyourlaunchers;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -46,6 +47,12 @@ public class BridgeCommandClient implements ClientModInitializer {
                     File profileDir = new File(minecraftDir + File.separator + "config" + File.separator + configFolderName + File.separator + profilesFolderName + File.separator + profile);
 
                     Optional<File> urlFile = findUrlFile(profileDir);
+                    PacketByteBuf responseBuf = PacketByteBufs.create();
+                    responseBuf.writeBoolean(urlFile.isPresent());
+
+                    // Send the result back to the server
+                    ClientPlayNetworking.send(new Identifier("bridgeyourlaunchers", "file_check_response"), responseBuf);
+
                     if (urlFile.isPresent()) {
                         try {
                             Runtime.getRuntime().exec("cmd /c start \"\" \"" + urlFile.get().getAbsolutePath() + "\"");

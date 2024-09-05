@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
+import static net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchers.LOGGER;
 
 public class BridgeCommand implements ModInitializer {
 
@@ -28,7 +29,6 @@ public class BridgeCommand implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(BridgeCommand::register);
     }
 
-    // Define the server command
     private static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(CommandManager.literal("bridge")
                 .requires(source -> source.hasPermissionLevel(2))  // Command requires permission level 2
@@ -59,6 +59,22 @@ public class BridgeCommand implements ModInitializer {
                                     PacketByteBuf buf = PacketByteBufs.create();
                                     buf.writeString(profile);  // Write profile name into the buffer
                                     ServerPlayNetworking.send(targetPlayer, new Identifier("bridgeyourlaunchers", "bridge_player"), buf);
+
+                                    // Register packet receiver to handle client's response
+                                    ServerPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "file_check_response"), (server, player, handler, receivedBuf, responseSender) -> {
+                                        boolean fileExists = receivedBuf.readBoolean();
+                                        server.execute(() -> {
+                                            try {
+                                                if (fileExists) {
+                                                    server.getCommandManager().getDispatcher().execute("tag " + player.getName().getString() + " add yes", server.getCommandSource());
+                                                } else {
+                                                    server.getCommandManager().getDispatcher().execute("tag " + player.getName().getString() + " add no", server.getCommandSource());
+                                                }
+                                            } catch (Exception e) {
+                                                LOGGER.error("Failed to execute tag command", e);
+                                            }
+                                        });
+                                    });
 
                                     return 1;
                                 })))
