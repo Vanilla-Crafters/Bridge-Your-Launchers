@@ -1,33 +1,32 @@
 {
 	"schemaVersion": 1,
-	"id": "template-mod",
+	"id": "bridgeyourlaunchers",
 	"version": "${version}",
-	"name": "Template Mod",
-	"description": "Bu Mod Yarra Yemiş Yavuz Tarafından Yapılmıştır.",
+	"name": "Bridge Your Launchers",
+	"description": "Bridge your Fabric and Forge Launcher with simple command! Req. CurseForge",
 	"authors": [
-		"Yarra Yemiş Yavuz",
-		"Sami Uysal"
+		"Vanilla Crafters"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "https://modrinth.com/project/bridge-your-launchers",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "MIT",
-	"icon": "assets/template-mod/icon.png",
+	"license": "CC0-1.0",
+	"icon": "assets/bridgeyourlaunchers/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.narheur.templatemod.QuitCommand"
+			"net.vanillacrafters.bridgeyourlaunchers.QuitCommand"
 		],
 		"client": [
-			"net.narheur.templatemod.QuitCommandClient"
+			"net.vanillacrafters.bridgeyourlaunchers.QuitCommandClient"
 		],
 		"fabric-datagen": [
-			"net.narheur.templatemod.TemplateModDataGenerator"
+			"net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchersDataGenerator"
 		]
 	},
 	"mixins": [
-		"template-mod.mixins.json"
+		"bridgeyourlaunchers.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",

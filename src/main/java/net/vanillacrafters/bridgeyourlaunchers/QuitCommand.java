@@ -1,4 +1,4 @@
-package net.narheur.templatemod;
+package net.vanillacrafters.bridgeyourlaunchers;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,7 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import static net.narheur.templatemod.TemplateMod.LOGGER;
+import static net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchers.LOGGER;
 
 public class QuitCommand implements ModInitializer {
 

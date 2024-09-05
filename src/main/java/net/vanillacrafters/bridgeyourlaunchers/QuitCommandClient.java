@@ -1,4 +1,4 @@
-package net.narheur.templatemod;
+package net.vanillacrafters.bridgeyourlaunchers;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
