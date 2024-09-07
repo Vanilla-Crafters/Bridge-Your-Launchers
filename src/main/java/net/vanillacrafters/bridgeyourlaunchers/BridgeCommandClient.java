@@ -103,7 +103,10 @@ public class BridgeCommandClient implements ClientModInitializer {
 
         if (!configFileJson.exists()) {
             try (FileWriter writer = new FileWriter(configFileJson)) {
-                writer.write("\"ifFileFound\":\"say yes\"\n\"ifFileNotFound\":\"say no\"");
+                writer.write("{\n" +
+                        "  \"ifFileFound\": \"execute as <player> at @s run say File found. Example command executed.\",\n" +
+                        "  \"ifFileNotFound\": \"execute as <player> at @s run say File not found. Example command executed.\"\n" +
+                        "}");
                 LOGGER.info("Created config file: " + configFileJson.getAbsolutePath());
             } catch (IOException e) {
                 LOGGER.severe("Failed to create config file: " + e.getMessage());
