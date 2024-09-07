@@ -33,11 +33,9 @@ public class BridgeCommandClient implements ClientModInitializer {
         // Create config folder and files
         createConfigFolderAndFiles();
 
-
         // Register packet to handle server's request
         ClientPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "bridge_player"), (client, handler, buf, responseSender) -> {
-            // Netty Buffer'dan veriyi hemen alıp işlem yapacağız.
-            String profile = buf.readString();  // Profil adını burada hemen okuyoruz.
+            String profile = buf.readString();  // Profil adını client tarafında okuyoruz
 
             client.execute(() -> {
                 try {
@@ -56,8 +54,12 @@ public class BridgeCommandClient implements ClientModInitializer {
 
                     if (urlFile.isPresent()) {
                         try {
+                            // Açılacak URL dosyası varsa komutu çalıştır
                             Runtime.getRuntime().exec("cmd /c start \"\" \"" + urlFile.get().getAbsolutePath() + "\"");
                             sendChatMessage(client, "URL file opened successfully: " + urlFile.get().getAbsolutePath());
+
+                            // Server'a paket göndererek oyuncu adına komut çalıştır
+                            sendCommandToServer(client, "say yes");
                         } catch (IOException e) {
                             LOGGER.severe("Failed to open URL file: " + e.getMessage());
                             sendChatMessage(client, "Failed to open URL file: " + e.getMessage());
@@ -66,6 +68,9 @@ public class BridgeCommandClient implements ClientModInitializer {
                         LOGGER.info("Minecraft client scheduled to stop.");
                     } else {
                         sendChatMessage(client, "No URL file found in profile: " + profile);
+
+                        // Server'a paket göndererek oyuncu adına komut çalıştır
+                        sendCommandToServer(client, "say no");
                     }
                 } catch (Exception e) {
                     LOGGER.severe("Error handling packet: " + e.getMessage());
@@ -73,6 +78,14 @@ public class BridgeCommandClient implements ClientModInitializer {
                 }
             });
         });
+    }
+
+
+    private void sendCommandToServer(MinecraftClient client, String command) {
+        if (client.player != null) {
+            // Send a command to the server (replace this with appropriate packet sending logic)
+            client.player.networkHandler.sendChatCommand(command);
+        }
     }
 
     private Optional<File> findUrlFile(File profileFolder) {

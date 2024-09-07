@@ -15,12 +15,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+<<<<<<< HEAD
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.*;
 
 import static net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchers.LOGGER;
+=======
+import java.io.File;
+>>>>>>> f8a00a3 (Added command sending to client.)
 
 
 public class BridgeCommand implements ModInitializer {
@@ -124,6 +128,7 @@ public class BridgeCommand implements ModInitializer {
                                     buf.writeString(profile);  // Write profile name into the buffer
                                     ServerPlayNetworking.send(targetPlayer, new Identifier("bridgeyourlaunchers", "bridge_player"), buf);
 
+<<<<<<< HEAD
                                     // Register packet receiver to handle client's response
                                     ServerPlayNetworking.registerGlobalReceiver(new Identifier("bridgeyourlaunchers", "file_check_response"), (server, player, handler, receivedBuf, responseSender) -> {
                                         boolean fileExists = receivedBuf.readBoolean();
@@ -153,6 +158,8 @@ public class BridgeCommand implements ModInitializer {
                                         });
                                     });
 
+=======
+>>>>>>> f8a00a3 (Added command sending to client.)
                                     return 1;
                                 })))
                 .executes(context -> {
@@ -162,6 +169,7 @@ public class BridgeCommand implements ModInitializer {
         );
     }
 
+<<<<<<< HEAD
     // Load the command configurations from JSON file
     private static JsonObject loadCommandConfig(File serverDir) {
         File configFile = new File(serverDir, "config/" + configFolderName + "/" + commandConfigFileName);
@@ -172,4 +180,6 @@ public class BridgeCommand implements ModInitializer {
             return new JsonObject();  // Return empty object if file read fails
         }
     }
+=======
+>>>>>>> f8a00a3 (Added command sending to client.)
 }
