@@ -63,8 +63,8 @@ public class BridgeCommand implements ModInitializer {
         if (!configFileJson.exists()) {
             try (FileWriter writer = new FileWriter(configFileJson)) {
                 writer.write("{\n" +
-                        "  \"ifFileFound\": \"say <player> has the file\",\n" +
-                        "  \"ifFileNotFound\": \"say <player> does not have the file\"\n" +
+                        "  \"ifFileFound\": \"execute as <player> at @s run say File found. Example command executed.\",\n" +
+                        "  \"ifFileNotFound\": \"execute as <player> at @s run say File not found. Example command executed.\"\n" +
                         "}");
                 LOGGER.info("Created config file: " + configFileJson.getAbsolutePath());
             } catch (IOException e) {
