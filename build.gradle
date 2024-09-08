@@ -33,13 +33,14 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	implementation 'com.formdev:flatlaf:3.5.1'
+	implementation files("lib/flatlaf-3.5.1.jar")
 }
 
 shadowJar {
 	archiveBaseName.set('bridgeyourlaunchers') // JAR dosyasının adını buraya koyun
 	archiveVersion.set('1.0.0') // JAR dosyasının sürüm numarasını buraya koyun
 	archiveClassifier.set('all') // İsteğe bağlı: JAR dosyasına ek bir sınıflandırıcı ekleyin
+	minimize()
 }
 
 processResources {
