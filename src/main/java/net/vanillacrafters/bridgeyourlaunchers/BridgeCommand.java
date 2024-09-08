@@ -17,13 +17,10 @@ import net.minecraft.util.Identifier;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.FileReader;
-import java.io.File;
+
+import java.io.*;
+
 import static net.vanillacrafters.bridgeyourlaunchers.BridgeYourLaunchers.LOGGER;
-
-
-import java.io.FileWriter;
-import java.io.IOException;
 
 
 public class BridgeCommand implements ModInitializer {
@@ -74,9 +71,20 @@ public class BridgeCommand implements ModInitializer {
 
         // Create the readme.txt file
         if (!readmeFile.exists()) {
-            try (FileWriter writer = new FileWriter(readmeFile)) {
-                writer.write("This is the readme file for Bridge Your Launchers mod.");
-                LOGGER.info("Created readme file: " + readmeFile.getAbsolutePath());
+            try (InputStream inputStream = BridgeCommand.class.getClassLoader().getResourceAsStream("readmes/readme.txt")) {
+                assert inputStream != null;
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                     FileWriter fileWriter = new FileWriter(readmeFile);
+                     BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+
+                    LOGGER.info("Created readme file: " + readmeFile.getAbsolutePath());
+                }
             } catch (IOException e) {
                 LOGGER.error("Failed to create readme file: " + e.getMessage());
             }
