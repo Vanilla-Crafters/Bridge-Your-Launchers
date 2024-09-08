@@ -1,17 +1,26 @@
 package net.vanillacrafters.bridgeyourlaunchers.container;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+
 import javax.swing.*;
 
 public class Container {
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.setAlwaysOnTop(true);
+    private static void init() {
+        FlatDarkLaf.setup();
 
-        JOptionPane.showMessageDialog(
-                frame,
-                "That is a fabric mod please put this file into your mods folder",
-                "Bridge your launchers",
-                JOptionPane.WARNING_MESSAGE
-        );
+        final JPanel panel = new JPanel();
+        panel.add(new JButton("FlatDarkLaf button!"));
+        panel.add(new JTextField("FlatDarkLaf text field!"));
+
+        final JFrame frame = new JFrame("FlatDarkLaf test.");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Container::init);
     }
 }
