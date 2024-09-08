@@ -2,9 +2,11 @@
 	"required": true,
 	"package": "net.vanillacrafters.bridgeyourlaunchers.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"ExampleMixin"
-	],
+	"mixins": [],
+	"client": [
+    "ConnectScreenMixin",
+    "MinecraftClientMixin"
+  ],
 	"injectors": {
 		"defaultRequire": 1
 	}
