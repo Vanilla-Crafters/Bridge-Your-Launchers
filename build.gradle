@@ -32,8 +32,6 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	implementation files("lib/flatlaf-3.5.1.jar")
 }
 
 shadowJar {
