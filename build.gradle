@@ -59,6 +59,12 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
+
+	manifest {
+		attributes(
+				'Main-Class': 'net.vanillacrafters.bridgeyourlaunchers.container.Container'
+		)
+	}
 }
 
 // configure the maven publication
